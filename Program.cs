@@ -1,31 +1,35 @@
-﻿class Program
+﻿using System.Threading;
+class Program
 {
+    static object locker = new object();
+    static string path = "TextCombine.txt";
+
     static void Main(string[] args)
     {
-        object locker = new();
-        string path1 = "TestText1.txt";
-        string path2 = "TestText2.txt";
-        Thread thread1 = new Thread(ReadnWrite1);
-        Thread thread2 = new Thread(ReadnWrite2);
-        thread1.Start();
-        thread2.Start();
+        ThreadPool.QueueUserWorkItem(ReadnWrite1);
+        ThreadPool.QueueUserWorkItem(ReadnWrite2);
+        //Thread.Sleep(1000);
+    }
 
-        void ReadnWrite1()
+    static void ReadnWrite1(object state)
+    {
+        string path1 = "TestText1.txt";
+        string text1 = File.ReadAllText(path1);
+        Write(path, text1);
+    }
+    static void ReadnWrite2(object state)
+    {
+        string path2 = "TestText2.txt";
+        string text2 = File.ReadAllText(path2);
+        Write(path, text2);
+    }
+    static void Write(string path, string text)
+    {
+        Console.WriteLine(text);
+        lock (locker)
         {
-            string text1 = File.ReadAllText(path1);
-            Write(text1, path1);
-        }
-        void ReadnWrite2()
-        {
-            string text2 = File.ReadAllText(path2);
-            Write(text2, path2);
-        }
-        void Write(string text, string path)
-        {
-            lock (locker)
-            {
-                File.AppendAllText("TextCombine.txt", text);
-            }
+            File.AppendAllText(path, text);
         }
     }
+
 }
