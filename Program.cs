@@ -4,11 +4,13 @@ class Program
     static object locker = new object();
     static string path = "TextCombine.txt";
 
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
         ThreadPool.QueueUserWorkItem(ReadnWrite1);
         ThreadPool.QueueUserWorkItem(ReadnWrite2);
-        //Thread.Sleep(1000);
+        await Task.Delay(50);
+
+        //await CreateAsyncTask();
     }
 
     static void ReadnWrite1(object state)
@@ -32,4 +34,10 @@ class Program
         }
     }
 
+    //static async Task CreateAsyncTask()
+    //{
+    //    ThreadPool.QueueUserWorkItem(ReadnWrite1);
+    //    ThreadPool.QueueUserWorkItem(ReadnWrite2);
+    //    await Task.Delay(1000);
+    //}
 }
